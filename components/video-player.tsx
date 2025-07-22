@@ -293,9 +293,9 @@ export default function VideoPlayer({ videoUrl, poseData, isAnalysisComplete }: 
         </div>
       </div>
 
-      <div className="p-4 space-y-4 max-w-2xl mx-auto w-full">
+      <div className={`p-4 space-y-4 max-w-2xl mx-auto w-full ${isFullscreen ? "text-white" : ""}`}>
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">{formatTime(currentTime)}</span>
+          <span className={`text-sm font-medium ${isFullscreen ? "text-white bg-black bg-opacity-50 px-2 py-1 rounded" : ""}`}>{formatTime(currentTime)}</span>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -326,7 +326,7 @@ export default function VideoPlayer({ videoUrl, poseData, isAnalysisComplete }: 
               <SkipForward className="h-5 w-5" />
             </Button>
           </div>
-          <span className="text-sm font-medium">{formatTime(duration)}</span>
+          <span className={`text-sm font-medium ${isFullscreen ? "text-white bg-black bg-opacity-50 px-2 py-1 rounded" : ""}`}>{formatTime(duration)}</span>
         </div>
 
         <Slider
@@ -341,7 +341,7 @@ export default function VideoPlayer({ videoUrl, poseData, isAnalysisComplete }: 
 
         {isAnalysisComplete && (
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Pose Overlay</span>
+            <span className={`text-sm font-medium ${isFullscreen ? "text-white bg-black bg-opacity-50 px-2 py-1 rounded" : ""}`}>Pose Overlay</span>
             <Button
               variant={showPose ? "default" : "outline"}
               size="sm"

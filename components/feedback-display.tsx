@@ -54,25 +54,13 @@ export default function FeedbackDisplay({ feedback, onReset }: FeedbackDisplayPr
             <Progress value={feedback.overallScore * 10} className="h-2" />
           </div>
 
-          {/* Add metrics display if available */}
-          {feedback.metrics && (
-            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{feedback.metrics.entryAngle.toFixed(1)}°</div>
-                <div className="text-sm text-gray-600">Entry Angle</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">
-                  {feedback.metrics.streamlinePosition.toFixed(0)}%
-                </div>
-                <div className="text-sm text-gray-600">Streamline Quality</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{feedback.metrics.bodyAlignment.toFixed(0)}%</div>
-                <div className="text-sm text-gray-600">Body Alignment</div>
-              </div>
+          {/* Display overall score prominently */}
+          <div className="grid grid-cols-1 gap-4 p-4 bg-gray-50 rounded-lg">
+            <div className="text-center">
+              <div className="text-4xl font-bold text-blue-600">{feedback.overallScore.toFixed(1)}</div>
+              <div className="text-sm text-gray-600">Score out of 10</div>
             </div>
-          )}
+          </div>
 
           {feedback.geminiFeedback && (
             <div className="space-y-2">
