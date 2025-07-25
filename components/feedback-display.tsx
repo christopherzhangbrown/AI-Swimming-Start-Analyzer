@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CheckCircle, XCircle, RotateCcw, Download } from "lucide-react"
+import { CheckCircle, XCircle, RotateCcw, Download, Target, Zap, Waves } from "lucide-react"
+
+import { PhaseTimeline } from "./phase-timeline"
 
 interface FeedbackDisplayProps {
   feedback: {
@@ -13,6 +15,44 @@ interface FeedbackDisplayProps {
     strengths: string[]
     improvements: string[]
     technicalAnalysis: string
+    setupScore?: number
+    launchScore?: number
+    entryScore?: number
+    phaseAnalysis?: {
+      setupScore: number
+      launchScore: number
+      entryScore: number
+      overallScore: number
+      phaseTimings?: {
+        setupStart: number
+        setupEnd: number
+        launchStart: number
+        launchEnd: number
+        entryStart: number
+        entryEnd: number
+        totalDuration: number
+      }
+      phaseBreakdown: {
+        setup: {
+          score: number
+          feedback: string
+          keyPoints: string[]
+          duration?: number
+        }
+        launch: {
+          score: number
+          feedback: string
+          keyPoints: string[]
+          duration?: number
+        }
+        entry: {
+          score: number
+          feedback: string
+          keyPoints: string[]
+          duration?: number
+        }
+      }
+    }
     metrics?: {
       reactionTime: number
       entryAngle: number
@@ -21,44 +61,79 @@ interface FeedbackDisplayProps {
     }
     geminiFeedback?: string
   } | null
+  currentTime?: number
+  onSeekToPhase?: (time: number) => void
+  onLoopPhase?: (startTime: number, endTime: number) => void
   onReset: () => void
 }
 
-export default function FeedbackDisplay({ feedback, onReset }: FeedbackDisplayProps) {
+// Helper functions for score styling
+function getScoreColor(score: number): string {
+  if (score >= 8.5) return "text-green-600";
+  if (score >= 7.0) return "text-blue-600";
+  if (score >= 5.5) return "text-yellow-600";
+  return "text-red-600";
+}
+
+function getScoreBarColor(score: number): string {
+  if (score >= 8.5) return "bg-green-500";
+  if (score >= 7.0) return "bg-blue-500";
+  if (score >= 5.5) return "bg-yellow-500";
+  return "bg-red-500";
+}
+
+export default function FeedbackDisplay({ feedback, currentTime = 0, onSeekToPhase, onLoopPhase, onReset }: FeedbackDisplayProps) {
   if (!feedback) return null
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle>Swimming Start Analysis</CardTitle>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={onReset}>
-              <RotateCcw className="mr-2 h-4 w-4" />
-              New Analysis
-            </Button>
-            <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-              <Download className="mr-2 h-4 w-4" />
-              Save Report
+    <div className="space-y-6">
+      {/* Phase Timeline - Show if we have phase analysis with timing data */}
+      {feedback.phaseAnalysis && feedback.phaseAnalysis.phaseTimings && onSeekToPhase && onLoopPhase && (
+        <PhaseTimeline
+          phaseAnalysis={feedback.phaseAnalysis as any}
+          currentTime={currentTime}
+          onSeekToPhase={onSeekToPhase}
+          onLoopPhase={onLoopPhase}
+        />
+      )}
+
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle>Swimming Start Analysis</CardTitle>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={onReset}>
+                <RotateCcw className="mr-2 h-4 w-4" />
+                New Analysis
+              </Button>
+              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                <Download className="mr-2 h-4 w-4" />
+                Save Report
             </Button>
           </div>
         </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Overall Score</span>
-              <span className="text-sm font-medium">{feedback.overallScore}/10</span>
-            </div>
-            <Progress value={feedback.overallScore * 10} className="h-2" />
-          </div>
-
           {/* Display overall score prominently */}
-          <div className="grid grid-cols-1 gap-4 p-4 bg-gray-50 rounded-lg">
+          <div className="grid grid-cols-1 gap-4 p-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg">
             <div className="text-center">
-              <div className="text-4xl font-bold text-blue-600">{feedback.overallScore.toFixed(1)}</div>
-              <div className="text-sm text-gray-600">Score out of 10</div>
+              <div className="text-4xl font-bold">{(feedback.phaseAnalysis?.overallScore || feedback.overallScore).toFixed(1)}</div>
+              <div className="text-sm opacity-90 mb-3">Overall Score out of 10</div>
+              
+              {/* Progress bar showing score */}
+              <div className="w-full bg-white bg-opacity-20 rounded-full h-3 mb-2">
+                <div 
+                  className="bg-white h-3 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${((feedback.phaseAnalysis?.overallScore || feedback.overallScore) / 10) * 100}%` }}
+                ></div>
+              </div>
+              
+              <div className="text-xs opacity-75">
+                {(feedback.phaseAnalysis?.overallScore || feedback.overallScore) >= 8.5 ? "Excellent!" : 
+                 (feedback.phaseAnalysis?.overallScore || feedback.overallScore) >= 7.0 ? "Good!" :
+                 (feedback.phaseAnalysis?.overallScore || feedback.overallScore) >= 5.5 ? "Fair" : "Needs Improvement"}
+              </div>
             </div>
           </div>
 
@@ -111,5 +186,6 @@ export default function FeedbackDisplay({ feedback, onReset }: FeedbackDisplayPr
         </div>
       </CardContent>
     </Card>
+    </div>
   )
 }

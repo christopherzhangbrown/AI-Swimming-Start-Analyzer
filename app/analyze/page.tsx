@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -8,7 +8,7 @@ import { Upload, Camera, Loader2, RotateCcw } from "lucide-react"
 import Link from "next/link"
 import VideoUploader from "@/components/video-uploader"
 import WebcamRecorder from "@/components/webcam-recorder"
-import VideoPlayer from "@/components/video-player"
+import VideoPlayer, { VideoPlayerRef } from "@/components/video-player"
 import FeedbackDisplay from "@/components/feedback-display"
 import { detectPosesInVideo, analyzePoseData } from "@/utils/pose-analysis"
 
@@ -20,6 +20,9 @@ export default function AnalyzePage() {
   const [analysisComplete, setAnalysisComplete] = useState(false)
   const [poseData, setPoseData] = useState<any[]>([])
   const [feedback, setFeedback] = useState<any>(null)
+  const [currentTime, setCurrentTime] = useState(0)
+
+  const videoPlayerRef = useRef<VideoPlayerRef>(null)
 
   const handleVideoUpload = (file: File) => {
     setVideoFile(file)
@@ -103,6 +106,23 @@ export default function AnalyzePage() {
       setAnalysisComplete(true)
     } finally {
       setIsAnalyzing(false)
+    }
+  }
+
+  // Phase navigation handlers
+  const handleTimeUpdate = (time: number) => {
+    setCurrentTime(time)
+  }
+
+  const handleSeekToPhase = (time: number) => {
+    if (videoPlayerRef.current) {
+      videoPlayerRef.current.seekToTime(time)
+    }
+  }
+
+  const handleLoopPhase = (startTime: number, endTime: number) => {
+    if (videoPlayerRef.current) {
+      videoPlayerRef.current.startLooping(startTime, endTime)
     }
   }
 
@@ -194,14 +214,21 @@ export default function AnalyzePage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-6 lg:grid-cols-2 max-w-5xl mx-auto w-full">
+          <div className="flex flex-col gap-6 max-w-4xl mx-auto w-full">
             <Card className="overflow-hidden">
               <CardContent className="p-0">
-                <VideoPlayer videoUrl={videoUrl} poseData={poseData} isAnalysisComplete={analysisComplete} />
+                <VideoPlayer 
+                  ref={videoPlayerRef}
+                  videoUrl={videoUrl} 
+                  poseData={poseData} 
+                  isAnalysisComplete={analysisComplete}
+                  onTimeUpdate={handleTimeUpdate}
+                  phaseAnalysis={feedback?.phaseAnalysis}
+                />
               </CardContent>
             </Card>
 
-            <div className="space-y-6">
+            <div className="w-full">
               {!analysisComplete ? (
                 <Card>
                   <CardContent className="p-6 flex flex-col items-center justify-center min-h-[300px]">
@@ -232,7 +259,13 @@ export default function AnalyzePage() {
                   </CardContent>
                 </Card>
               ) : (
-                <FeedbackDisplay feedback={feedback} onReset={resetAnalysis} />
+                <FeedbackDisplay 
+                  feedback={feedback} 
+                  currentTime={currentTime}
+                  onSeekToPhase={handleSeekToPhase}
+                  onLoopPhase={handleLoopPhase}
+                  onReset={resetAnalysis} 
+                />
               )}
             </div>
           </div>

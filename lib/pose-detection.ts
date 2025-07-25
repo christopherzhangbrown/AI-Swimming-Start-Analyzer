@@ -465,7 +465,7 @@ function isStartMotion(poseSeq: any[], returnConfidence = false): any {
 }
 
 // Function to send pose data to Gemini for analysis
-async function analyzeWithGemini(poseFrames: PoseFrame[]): Promise<{ score: number, feedback: string }> {
+async function analyzeWithGemini(poseFrames: PoseFrame[]): Promise<{ score: number, feedback: string, phaseAnalysis?: any }> {
   try {
     // Prepare simplified pose data for Gemini
     const simplifiedData = poseFrames.map((frame, index) => {
@@ -495,7 +495,8 @@ async function analyzeWithGemini(poseFrames: PoseFrame[]): Promise<{ score: numb
       const result = await response.json()
       return {
         score: extractScoreFromGemini(result.feedback),
-        feedback: result.feedback
+        feedback: result.feedback,
+        phaseAnalysis: result.phaseAnalysis // Include phase analysis from API response
       }
     } else {
       throw new Error('Gemini analysis failed')
@@ -595,7 +596,7 @@ export async function analyzePoseData(poseFrames: PoseFrame[]): Promise<any> {
     }
   }
 
-  // Try Gemini analysis first
+  // Try phase-based and Gemini analysis
   try {
     const geminiResult = await analyzeWithGemini(poseFrames)
     
@@ -620,6 +621,7 @@ export async function analyzePoseData(poseFrames: PoseFrame[]): Promise<any> {
       ],
       technicalAnalysis: `Gemini AI analysis: ${geminiResult.feedback}\n\nTechnical details: ${poseFrames.length} frames analyzed. Movement confidence: ${(confidence * 100).toFixed(0)}%. Max velocity: ${(details.velocityJump?.maxVelocity * 1000).toFixed(1)} units/frame.`,
       geminiFeedback: geminiResult.feedback,
+      phaseAnalysis: geminiResult.phaseAnalysis, // Include phase analysis from Gemini response
       metrics: metrics || {
         reactionTime: details.velocityJump?.maxVelocity || 0.1,
         entryAngle: 0,
@@ -630,27 +632,34 @@ export async function analyzePoseData(poseFrames: PoseFrame[]): Promise<any> {
   } catch (error) {
     console.error('Gemini analysis failed, falling back to basic analysis:', error)
     
-    // Fallback to improved basic analysis
+    // Fallback to improved basic analysis with local phase analysis
     const poseSequence = poseFrames.map((frame) => frame.keypoints)
     const { isStart, confidence, details } = isStartMotion(poseSequence, true)
     const metrics = calculateSwimmingMetrics(poseFrames)
     
-    // More generous scoring even for fallback
-    let score = 6.0 // Base score for any movement detected
-    if (confidence > 0.8) score += 2.0
-    else if (confidence > 0.6) score += 1.5
-    else if (confidence > 0.4) score += 1.0
-    else score += 0.5
+    // Create simplified phase analysis for fallback
+    const simplifiedPhaseData = poseFrames.map((frame, index) => ({
+      frame: index,
+      timestamp: frame.timestamp,
+      hasFullBody: !!(frame.keypoints.nose && frame.keypoints.leftShoulder && frame.keypoints.rightShoulder && 
+                     frame.keypoints.leftHip && frame.keypoints.rightHip),
+      movement: index > 0 ? calculateFrameMovement(poseFrames[index-1].keypoints, frame.keypoints) : 0,
+      posture: analyzePosePosture(frame.keypoints)
+    }))
     
-    score = Math.min(10, score)
-
+    // Generate local phase analysis
+    const localPhaseAnalysis = generateLocalPhaseAnalysis(simplifiedPhaseData)
+    
+    // More generous scoring even for fallback
+    let score = Math.max(6.0, localPhaseAnalysis.overallScore) // Use phase analysis score or minimum 6.0
+    
     return {
       overallScore: Math.round(score * 10) / 10,
-      summary: `Swimming movement detected and analyzed successfully.`,
+      summary: `Swimming movement detected and analyzed successfully across 3 phases.`,
       strengths: [
         "Movement sequence captured effectively",
         "Body tracking successful throughout video", 
-        "Motion patterns identified",
+        "Phase-based analysis completed",
         "Pose detection worked well"
       ],
       improvements: [
@@ -658,7 +667,8 @@ export async function analyzePoseData(poseFrames: PoseFrame[]): Promise<any> {
         "Ensure consistent technique",
         "Consider improving video quality for better analysis"
       ],
-      technicalAnalysis: `Basic analysis: ${poseFrames.length} frames processed. Movement confidence: ${(confidence * 100).toFixed(0)}%. Velocity: ${(details.velocityJump?.maxVelocity * 1000).toFixed(1)} units/frame. Score: ${score.toFixed(1)}/10`,
+      technicalAnalysis: `Local analysis: ${poseFrames.length} frames processed. Movement confidence: ${(confidence * 100).toFixed(0)}%. Velocity: ${(details.velocityJump?.maxVelocity * 1000).toFixed(1)} units/frame. Phase scores - Setup: ${localPhaseAnalysis.setupScore.toFixed(1)}, Launch: ${localPhaseAnalysis.launchScore.toFixed(1)}, Entry: ${localPhaseAnalysis.entryScore.toFixed(1)}`,
+      phaseAnalysis: localPhaseAnalysis,
       metrics: metrics || {
         reactionTime: details.velocityJump?.maxVelocity || 0.1,
         entryAngle: 0,
@@ -720,4 +730,78 @@ function calculateSwimmingMetrics(poseFrames: PoseFrame[]): any {
   metrics.bodyAlignment = 80 // Typical good alignment
 
   return metrics
+}
+
+// Generate local phase analysis when Gemini is not available
+function generateLocalPhaseAnalysis(poseData: any[]): any {
+  const totalFrames = poseData.length;
+  
+  // Define phase boundaries
+  const setupEnd = Math.floor(totalFrames * 0.3);
+  const launchEnd = Math.floor(totalFrames * 0.7);
+  
+  const setupFrames = poseData.slice(0, setupEnd);
+  const launchFrames = poseData.slice(setupEnd, launchEnd);
+  const entryFrames = poseData.slice(launchEnd);
+  
+  // Simple analysis for each phase
+  const setupScore = analyzeLocalSetup(setupFrames);
+  const launchScore = analyzeLocalLaunch(launchFrames);
+  const entryScore = analyzeLocalEntry(entryFrames);
+  
+  const overallScore = (setupScore * 0.25 + launchScore * 0.5 + entryScore * 0.25);
+  
+  return {
+    setupScore,
+    launchScore,
+    entryScore,
+    overallScore: Math.round(overallScore * 10) / 10,
+    phaseBreakdown: {
+      setup: {
+        score: setupScore,
+        feedback: setupScore >= 7 ? "Good setup phase" : "Setup needs improvement",
+        keyPoints: ["Starting position analyzed", "Stability assessed"]
+      },
+      launch: {
+        score: launchScore,
+        feedback: launchScore >= 7 ? "Strong launch detected" : "Work on explosive power",
+        keyPoints: ["Movement patterns analyzed", "Power assessment completed"]
+      },
+      entry: {
+        score: entryScore,
+        feedback: entryScore >= 7 ? "Good entry form" : "Focus on streamlined position",
+        keyPoints: ["Body positioning evaluated", "Entry technique assessed"]
+      }
+    }
+  };
+}
+
+function analyzeLocalSetup(frames: any[]): number {
+  if (frames.length === 0) return 6.0;
+  let score = 6.0;
+  if (frames.some(f => f.hasFullBody)) score += 1.0;
+  if (frames.some(f => f.posture === 'upright')) score += 1.0;
+  if (frames.length > 2) score += 0.5;
+  return Math.min(score, 10.0);
+}
+
+function analyzeLocalLaunch(frames: any[]): number {
+  if (frames.length === 0) return 6.0;
+  let score = 6.0;
+  const maxMovement = Math.max(...frames.map(f => f.movement || 0));
+  if (maxMovement > 0.015) score += 2.0;
+  else if (maxMovement > 0.01) score += 1.5;
+  else if (maxMovement > 0.005) score += 1.0;
+  if (frames.some(f => f.posture === 'transitioning')) score += 0.5;
+  return Math.min(score, 10.0);
+}
+
+function analyzeLocalEntry(frames: any[]): number {
+  if (frames.length === 0) return 6.0;
+  let score = 6.0;
+  if (frames.some(f => f.posture === 'streamlined')) score += 1.5;
+  if (frames.some(f => f.hasFullBody)) score += 1.0;
+  const avgMovement = frames.reduce((sum, f) => sum + (f.movement || 0), 0) / frames.length;
+  if (avgMovement > 0.003 && avgMovement < 0.015) score += 0.5;
+  return Math.min(score, 10.0);
 }

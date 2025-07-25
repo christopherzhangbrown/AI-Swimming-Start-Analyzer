@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { Play, Pause, SkipBack, SkipForward } from "lucide-react"
@@ -9,14 +9,36 @@ interface VideoPlayerProps {
   videoUrl: string
   poseData: any[]
   isAnalysisComplete: boolean
+  onTimeUpdate?: (currentTime: number) => void
+  phaseAnalysis?: {
+    phaseTimings?: {
+      setupStart: number
+      setupEnd: number
+      launchStart: number
+      launchEnd: number
+      entryStart: number
+      entryEnd: number
+      totalDuration: number
+    }
+  }
 }
 
-export default function VideoPlayer({ videoUrl, poseData, isAnalysisComplete }: VideoPlayerProps) {
+export interface VideoPlayerRef {
+  seekToTime: (time: number) => void
+  startLooping: (startTime: number, endTime: number) => void
+  stopLooping: () => void
+  getCurrentTime: () => number
+}
+
+const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({ videoUrl, poseData, isAnalysisComplete, onTimeUpdate, phaseAnalysis }, ref) => {
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [showPose, setShowPose] = useState(true)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isLooping, setIsLooping] = useState(false)
+  const [loopStart, setLoopStart] = useState<number | null>(null)
+  const [loopEnd, setLoopEnd] = useState<number | null>(null)
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -213,7 +235,20 @@ export default function VideoPlayer({ videoUrl, poseData, isAnalysisComplete }: 
     const video = videoRef.current
     if (!video) return
 
-    setCurrentTime(video.currentTime)
+    const time = video.currentTime
+    setCurrentTime(time)
+    
+    // Call parent callback
+    if (onTimeUpdate) {
+      onTimeUpdate(time)
+    }
+
+    // Handle looping
+    if (isLooping && loopStart !== null && loopEnd !== null) {
+      if (time >= loopEnd) {
+        video.currentTime = loopStart
+      }
+    }
   }
 
   const handleSliderChange = (value: number[]) => {
@@ -242,6 +277,55 @@ export default function VideoPlayer({ videoUrl, poseData, isAnalysisComplete }: 
     video.currentTime = Math.max(video.currentTime - 0.1, 0)
   }
 
+  // Create colored timeline segments based on phase analysis
+  const getTimelineSegments = () => {
+    if (!phaseAnalysis?.phaseTimings || !duration) {
+      return [{ start: 0, end: 100, color: 'bg-blue-500', phase: 'full' }];
+    }
+
+    const timings = phaseAnalysis.phaseTimings;
+    const segments = [];
+
+    // Setup phase (green)
+    segments.push({
+      start: (timings.setupStart / duration) * 100,
+      end: (timings.setupEnd / duration) * 100,
+      color: 'bg-green-500',
+      phase: 'setup'
+    });
+
+    // Launch phase (red)
+    segments.push({
+      start: (timings.launchStart / duration) * 100,
+      end: (timings.launchEnd / duration) * 100,
+      color: 'bg-red-500',
+      phase: 'launch'
+    });
+
+    // Entry phase (blue)
+    segments.push({
+      start: (timings.entryStart / duration) * 100,
+      end: (timings.entryEnd / duration) * 100,
+      color: 'bg-blue-500',
+      phase: 'entry'
+    });
+
+    return segments;
+  };
+
+  const handleTimelineClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percentage = x / rect.width;
+    const newTime = percentage * duration;
+    
+    const video = videoRef.current;
+    if (video) {
+      video.currentTime = newTime;
+      setCurrentTime(newTime);
+    }
+  };
+
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60)
     const seconds = Math.floor(time % 60)
@@ -249,6 +333,43 @@ export default function VideoPlayer({ videoUrl, poseData, isAnalysisComplete }: 
 
     return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}.${milliseconds.toString().padStart(2, "0")}`
   }
+
+  // Phase navigation methods
+  const seekToTime = (time: number) => {
+    const video = videoRef.current
+    if (!video) return
+
+    video.currentTime = Math.max(0, Math.min(time, video.duration))
+    setCurrentTime(video.currentTime)
+  }
+
+  const startLooping = (startTime: number, endTime: number) => {
+    setLoopStart(startTime)
+    setLoopEnd(endTime)
+    setIsLooping(true)
+    seekToTime(startTime)
+    
+    // Auto-play when looping starts
+    const video = videoRef.current
+    if (video && !isPlaying) {
+      video.play()
+      setIsPlaying(true)
+    }
+  }
+
+  const stopLooping = () => {
+    setIsLooping(false)
+    setLoopStart(null)
+    setLoopEnd(null)
+  }
+
+  // Expose methods to parent component
+  useImperativeHandle(ref, () => ({
+    seekToTime,
+    startLooping,
+    stopLooping,
+    getCurrentTime: () => currentTime
+  }))
 
   // Add fullscreen handler
   const handleFullscreen = () => {
@@ -329,15 +450,40 @@ export default function VideoPlayer({ videoUrl, poseData, isAnalysisComplete }: 
           <span className={`text-sm font-medium ${isFullscreen ? "text-white bg-black bg-opacity-50 px-2 py-1 rounded" : ""}`}>{formatTime(duration)}</span>
         </div>
 
-        <Slider
-          value={[currentTime]}
-          min={0}
-          max={duration || 100}
-          step={0.01}
-          onValueChange={handleSliderChange}
-          className={`w-full ${isFullscreen ? "fullscreen-slider" : ""}`}
-          style={isFullscreen ? { background: "linear-gradient(90deg, #fff 0%, #f3f4f6 100%)", borderRadius: "4px" } : {}}
-        />
+        {/* Custom colored timeline */}
+        <div className="relative w-full">
+          <div 
+            className="w-full h-2 bg-gray-200 rounded-full cursor-pointer relative overflow-hidden"
+            onClick={handleTimelineClick}
+          >
+            {/* Phase colored segments */}
+            {getTimelineSegments().map((segment, index) => (
+              <div
+                key={index}
+                className={`absolute h-full ${segment.color} transition-all duration-200`}
+                style={{
+                  left: `${segment.start}%`,
+                  width: `${segment.end - segment.start}%`
+                }}
+              />
+            ))}
+            
+            {/* Current time indicator */}
+            <div 
+              className="absolute top-0 w-1 h-full bg-white border border-gray-400 rounded-full shadow-md transition-all duration-100"
+              style={{ left: `${duration > 0 ? (currentTime / duration) * 100 : 0}%`, transform: 'translateX(-50%)' }}
+            />
+          </div>
+          
+          {/* Phase labels (only show if we have phase data) */}
+          {phaseAnalysis?.phaseTimings && (
+            <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <span>Setup</span>
+              <span>Launch</span>
+              <span>Entry</span>
+            </div>
+          )}
+        </div>
 
         {isAnalysisComplete && (
           <div className="flex items-center justify-between">
@@ -355,4 +501,8 @@ export default function VideoPlayer({ videoUrl, poseData, isAnalysisComplete }: 
       </div>
     </div>
   )
-}
+})
+
+VideoPlayer.displayName = "VideoPlayer"
+
+export default VideoPlayer
