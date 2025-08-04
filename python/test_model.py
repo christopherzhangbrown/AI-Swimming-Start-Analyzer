@@ -37,6 +37,10 @@ def predict_phase_from_frame(frame):
 
 def run_video(video_path):
     cap = cv2.VideoCapture(video_path)
+    print(cv2.getBuildInformation())
+    if not cap.isOpened():
+        print("Error: Could not open video file.")
+        return
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
