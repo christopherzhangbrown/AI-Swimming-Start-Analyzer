@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="utf-8"?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <task>
+      <id>1</id>
+      <name>Dive Phase Test 1</name>
+      <size>116</size>
+      <mode>interpolation</mode>
+      <overlap>5</overlap>
+      <bugtracker></bugtracker>
+      <created>2025-08-02 20:34:48.445483+00:00</created>
+      <updated>2025-08-03 04:30:00.740259+00:00</updated>
+      <subset>default</subset>
+      <start_frame>0</start_frame>
+      <stop_frame>115</stop_frame>
+      <frame_filter></frame_filter>
+      <segments>
+        <segment>
+          <id>1</id>
+          <start>0</start>
+          <stop>115</stop>
+          <url>http://localhost:8080/api/jobs/1</url>
+        </segment>
+      </segments>
+      <owner>
+        <username>christopherzhang</username>
+        <email>zhanggopher895@gmail.com</email>
+      </owner>
+      <assignee></assignee>
+      <labels>
+        <label>
+          <name>Setup</name>
+          <color>#2f3a1f</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>Takeoff</name>
+          <color>#e24ee0</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>Flight</name>
+          <color>#f001ff</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>Entry</name>
+          <color>#52c801</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+      </labels>
+      <original_size>
+        <width>538</width>
+        <height>960</height>
+      </original_size>
+      <source>2ea9648cd87f4781b1622dfa552a0c75.mp4</source>
+    </task>
+    <dumped>2025-08-03 04:36:09.403791+00:00</dumped>
+  </meta>
+  <image id="0" name="frame_000000" width="538" height="960">
+  </image>
+  <image id="1" name="frame_000001" width="538" height="960">
+  </image>
+  <image id="2" name="frame_000002" width="538" height="960">
+  </image>
+  <image id="3" name="frame_000003" width="538" height="960">
+  </image>
+  <image id="4" name="frame_000004" width="538" height="960">
+  </image>
+  <image id="5" name="frame_000005" width="538" height="960">
+  </image>
+  <image id="6" name="frame_000006" width="538" height="960">
+  </image>
+  <image id="7" name="frame_000007" width="538" height="960">
+  </image>
+  <image id="8" name="frame_000008" width="538" height="960">
+  </image>
+  <image id="9" name="frame_000009" width="538" height="960">
+  </image>
+  <image id="10" name="frame_000010" width="538" height="960">
+  </image>
+  <image id="11" name="frame_000011" width="538" height="960">
+  </image>
+  <image id="12" name="frame_000012" width="538" height="960">
+  </image>
+  <image id="13" name="frame_000013" width="538" height="960">
+  </image>
+  <image id="14" name="frame_000014" width="538" height="960">
+  </image>
+  <image id="15" name="frame_000015" width="538" height="960">
+  </image>
+  <image id="16" name="frame_000016" width="538" height="960">
+  </image>
+  <image id="17" name="frame_000017" width="538" height="960">
+  </image>
+  <image id="18" name="frame_000018" width="538" height="960">
+  </image>
+  <image id="19" name="frame_000019" width="538" height="960">
+  </image>
+  <image id="20" name="frame_000020" width="538" height="960">
+  </image>
+  <image id="21" name="frame_000021" width="538" height="960">
+  </image>
+  <image id="22" name="frame_000022" width="538" height="960">
+  </image>
+  <image id="23" name="frame_000023" width="538" height="960">
+  </image>
+  <image id="24" name="frame_000024" width="538" height="960">
+  </image>
+  <image id="25" name="frame_000025" width="538" height="960">
+  </image>
+  <image id="26" name="frame_000026" width="538" height="960">
+  </image>
+  <image id="27" name="frame_000027" width="538" height="960">
+  </image>
+  <image id="28" name="frame_000028" width="538" height="960">
+  </image>
+  <image id="29" name="frame_000029" width="538" height="960">
+  </image>
+  <image id="30" name="frame_000030" width="538" height="960">
+  </image>
+  <image id="31" name="frame_000031" width="538" height="960">
+  </image>
+  <image id="32" name="frame_000032" width="538" height="960">
+  </image>
+  <image id="33" name="frame_000033" width="538" height="960">
+  </image>
+  <image id="34" name="frame_000034" width="538" height="960">
+  </image>
+  <image id="35" name="frame_000035" width="538" height="960">
+  </image>
+  <image id="36" name="frame_000036" width="538" height="960">
+  </image>
+  <image id="37" name="frame_000037" width="538" height="960">
+  </image>
+  <image id="38" name="frame_000038" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="39" name="frame_000039" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="40" name="frame_000040" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="41" name="frame_000041" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="42" name="frame_000042" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="43" name="frame_000043" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="44" name="frame_000044" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="45" name="frame_000045" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="46" name="frame_000046" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="47" name="frame_000047" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="48" name="frame_000048" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="49" name="frame_000049" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="50" name="frame_000050" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="51" name="frame_000051" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="52" name="frame_000052" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="53" name="frame_000053" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="54" name="frame_000054" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="55" name="frame_000055" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="56" name="frame_000056" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="57" name="frame_000057" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="58" name="frame_000058" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="59" name="frame_000059" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="60" name="frame_000060" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="61" name="frame_000061" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="62" name="frame_000062" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="63" name="frame_000063" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="64" name="frame_000064" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="65" name="frame_000065" width="538" height="960">
+    <tag label="Setup" source="manual">
+    </tag>
+  </image>
+  <image id="66" name="frame_000066" width="538" height="960">
+    <tag label="Takeoff" source="manual">
+    </tag>
+  </image>
+  <image id="67" name="frame_000067" width="538" height="960">
+    <tag label="Takeoff" source="manual">
+    </tag>
+  </image>
+  <image id="68" name="frame_000068" width="538" height="960">
+    <tag label="Takeoff" source="manual">
+    </tag>
+  </image>
+  <image id="69" name="frame_000069" width="538" height="960">
+    <tag label="Takeoff" source="manual">
+    </tag>
+  </image>
+  <image id="70" name="frame_000070" width="538" height="960">
+    <tag label="Takeoff" source="manual">
+    </tag>
+  </image>
+  <image id="71" name="frame_000071" width="538" height="960">
+    <tag label="Takeoff" source="manual">
+    </tag>
+  </image>
+  <image id="72" name="frame_000072" width="538" height="960">
+    <tag label="Takeoff" source="manual">
+    </tag>
+  </image>
+  <image id="73" name="frame_000073" width="538" height="960">
+    <tag label="Takeoff" source="manual">
+    </tag>
+  </image>
+  <image id="74" name="frame_000074" width="538" height="960">
+    <tag label="Takeoff" source="manual">
+    </tag>
+  </image>
+  <image id="75" name="frame_000075" width="538" height="960">
+    <tag label="Takeoff" source="manual">
+    </tag>
+  </image>
+  <image id="76" name="frame_000076" width="538" height="960">
+    <tag label="Takeoff" source="manual">
+    </tag>
+  </image>
+  <image id="77" name="frame_000077" width="538" height="960">
+    <tag label="Takeoff" source="manual">
+    </tag>
+  </image>
+  <image id="78" name="frame_000078" width="538" height="960">
+    <tag label="Takeoff" source="manual">
+    </tag>
+  </image>
+  <image id="79" name="frame_000079" width="538" height="960">
+    <tag label="Takeoff" source="manual">
+    </tag>
+  </image>
+  <image id="80" name="frame_000080" width="538" height="960">
+    <tag label="Flight" source="manual">
+    </tag>
+  </image>
+  <image id="81" name="frame_000081" width="538" height="960">
+    <tag label="Flight" source="manual">
+    </tag>
+  </image>
+  <image id="82" name="frame_000082" width="538" height="960">
+    <tag label="Flight" source="manual">
+    </tag>
+  </image>
+  <image id="83" name="frame_000083" width="538" height="960">
+    <tag label="Flight" source="manual">
+    </tag>
+  </image>
+  <image id="84" name="frame_000084" width="538" height="960">
+    <tag label="Flight" source="manual">
+    </tag>
+  </image>
+  <image id="85" name="frame_000085" width="538" height="960">
+    <tag label="Flight" source="manual">
+    </tag>
+  </image>
+  <image id="86" name="frame_000086" width="538" height="960">
+    <tag label="Flight" source="manual">
+    </tag>
+  </image>
+  <image id="87" name="frame_000087" width="538" height="960">
+    <tag label="Flight" source="manual">
+    </tag>
+  </image>
+  <image id="88" name="frame_000088" width="538" height="960">
+    <tag label="Entry" source="manual">
+    </tag>
+  </image>
+  <image id="89" name="frame_000089" width="538" height="960">
+    <tag label="Entry" source="manual">
+    </tag>
+  </image>
+  <image id="90" name="frame_000090" width="538" height="960">
+    <tag label="Entry" source="manual">
+    </tag>
+  </image>
+  <image id="91" name="frame_000091" width="538" height="960">
+    <tag label="Entry" source="manual">
+    </tag>
+  </image>
+  <image id="92" name="frame_000092" width="538" height="960">
+    <tag label="Entry" source="manual">
+    </tag>
+  </image>
+  <image id="93" name="frame_000093" width="538" height="960">
+    <tag label="Entry" source="manual">
+    </tag>
+  </image>
+  <image id="94" name="frame_000094" width="538" height="960">
+    <tag label="Entry" source="manual">
+    </tag>
+  </image>
+  <image id="95" name="frame_000095" width="538" height="960">
+    <tag label="Entry" source="manual">
+    </tag>
+  </image>
+  <image id="96" name="frame_000096" width="538" height="960">
+    <tag label="Entry" source="manual">
+    </tag>
+  </image>
+  <image id="97" name="frame_000097" width="538" height="960">
+    <tag label="Entry" source="manual">
+    </tag>
+  </image>
+  <image id="98" name="frame_000098" width="538" height="960">
+    <tag label="Entry" source="manual">
+    </tag>
+  </image>
+  <image id="99" name="frame_000099" width="538" height="960">
+    <tag label="Entry" source="manual">
+    </tag>
+  </image>
+  <image id="100" name="frame_000100" width="538" height="960">
+    <tag label="Entry" source="manual">
+    </tag>
+  </image>
+  <image id="101" name="frame_000101" width="538" height="960">
+    <tag label="Entry" source="manual">
+    </tag>
+  </image>
+  <image id="102" name="frame_000102" width="538" height="960">
+    <tag label="Entry" source="manual">
+    </tag>
+  </image>
+  <image id="103" name="frame_000103" width="538" height="960">
+  </image>
+  <image id="104" name="frame_000104" width="538" height="960">
+  </image>
+  <image id="105" name="frame_000105" width="538" height="960">
+  </image>
+  <image id="106" name="frame_000106" width="538" height="960">
+  </image>
+  <image id="107" name="frame_000107" width="538" height="960">
+  </image>
+  <image id="108" name="frame_000108" width="538" height="960">
+  </image>
+  <image id="109" name="frame_000109" width="538" height="960">
+  </image>
+  <image id="110" name="frame_000110" width="538" height="960">
+  </image>
+  <image id="111" name="frame_000111" width="538" height="960">
+  </image>
+  <image id="112" name="frame_000112" width="538" height="960">
+  </image>
+  <image id="113" name="frame_000113" width="538" height="960">
+  </image>
+  <image id="114" name="frame_000114" width="538" height="960">
+  </image>
+  <image id="115" name="frame_000115" width="538" height="960">
+  </image>
+</annotations>

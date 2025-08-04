@@ -1,0 +1,44 @@
+{
+  "video_info": {
+    "total_frames": 102,
+    "fps": 30
+  },
+  "phases": [
+    {
+      "phase": "Setup",
+      "start_frame": 38,
+      "end_frame": 65,
+      "duration_frames": 28,
+      "start_time": 1.2666666666666666,
+      "end_time": 2.1666666666666665,
+      "duration_seconds": 0.9333333333333333
+    },
+    {
+      "phase": "Takeoff",
+      "start_frame": 66,
+      "end_frame": 79,
+      "duration_frames": 14,
+      "start_time": 2.2,
+      "end_time": 2.6333333333333333,
+      "duration_seconds": 0.4666666666666667
+    },
+    {
+      "phase": "Flight",
+      "start_frame": 80,
+      "end_frame": 87,
+      "duration_frames": 8,
+      "start_time": 2.6666666666666665,
+      "end_time": 2.9,
+      "duration_seconds": 0.26666666666666666
+    },
+    {
+      "phase": "Entry",
+      "start_frame": 88,
+      "end_frame": 102,
+      "duration_frames": 15,
+      "start_time": 2.933333333333333,
+      "end_time": 3.4,
+      "duration_seconds": 0.5
+    }
+  ]
+}
