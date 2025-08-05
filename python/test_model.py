@@ -13,14 +13,16 @@ model = keras.models.load_model("models/saved_model/swim_phase_classifier.keras"
 # ✅ Load Mediapipe Pose
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(static_image_mode=False, min_detection_confidence=0.5, min_tracking_confidence=0.5)
+mp_drawing = mp.solutions.drawing_utils
+
 
 def predict_phase_from_frame(frame):
-    """Process a single frame and return predicted phase name (or None if no pose found)."""
+    """Process a single frame and return predicted phase name and landmarks (or None if no pose found)."""
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     results = pose.process(rgb)
 
     if not results.pose_landmarks:
-        return None  # No person detected
+        return None, None  # No person detected
 
     # extract only training keypoints
     landmarks = results.pose_landmarks.landmark
@@ -33,7 +35,7 @@ def predict_phase_from_frame(frame):
     input_data = np.array(keypoints).reshape(1, -1)
     pred = model.predict(input_data, verbose=0)
     phase = PHASES[np.argmax(pred)]
-    return phase
+    return phase, results.pose_landmarks
 
 def run_video(video_path):
     cap = cv2.VideoCapture(video_path)
@@ -46,9 +48,14 @@ def run_video(video_path):
         if not ret:
             break
 
-        phase = predict_phase_from_frame(frame)
+        phase, pose_landmarks = predict_phase_from_frame(frame)
 
-        # Draw prediction on frame
+        # ✅ Draw pose landmarks
+        if pose_landmarks:
+            mp_drawing.draw_landmarks(
+                frame, pose_landmarks, mp_pose.POSE_CONNECTIONS)
+
+        # ✅ Draw predicted phase
         if phase:
             cv2.putText(frame, f"Phase: {phase}",
                         (30, 50), cv2.FONT_HERSHEY_SIMPLEX,
@@ -64,7 +71,7 @@ def run_video(video_path):
 
 if __name__ == "__main__":
     # 🔥 TEST ON ORIGINAL LABELED VIDEO FIRST
-    run_video("videos/2ea9648cd87f4781b1622dfa552a0c75.mp4")
+    run_video("videos/cropped_lane.mp4")
 
     # 🏊‍♂️ THEN TRY A DIFFERENT VIDEO (swap filename)
     # run_video("data/test_video.mp4")
