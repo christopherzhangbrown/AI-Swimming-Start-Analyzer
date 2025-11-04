@@ -565,7 +565,7 @@ async function handleAIAnalysis(poseData: any[]) {
 async function generateDetailedAIFeedback(poseData: any[], apiKey: string): Promise<string> {
   // Analyze movement progression
   const movementData = poseData.map((frame, i) => {
-    return `Frame ${i + 1}: ${frame.hasFullBody ? 'Full body visible' : 'Partial visibility'}, Movement: ${(frame.movement * 1000).toFixed(1)} units, Posture: ${frame.posture}`
+    return `${frame.hasFullBody ? 'Full body visible' : 'Partial visibility'}, Movement intensity: ${(frame.movement * 1000).toFixed(1)} units, Posture: ${frame.posture}`
   }).join('\n')
 
   const response = await fetch(
@@ -581,33 +581,14 @@ async function generateDetailedAIFeedback(poseData: any[], apiKey: string): Prom
         messages: [
           {
             role: "system",
-            content: `You are an expert competitive swimming coach analyzing racing starts from starting blocks. 
-
-Here is the pose tracking data from this swimmer's start sequence:
-
-${movementData}
-
-Each frame shows:
-- Body visibility (full body or partial)
-- Movement intensity (in units)
-- Posture type (upright, transitioning, streamlined)`
+            content: `Here is the swimmer's start sequence: ${movementData} Each observation shows:
+              - Body visibility (full body or partial)
+              - Movement intensity (in units)
+              - Posture type (upright, transitioning, streamlined)`
           },
           {
             role: "user",
-            content: `Analyze this swimming start and provide:
-1. A score from 1-10 (format: "Score: X.X/10")
-2. Assessment of explosive power off the blocks
-3. Body positioning and streamline evaluation
-4. Timing and coordination feedback
-5. Water entry technique
-
-Requirements:
-- MUST include "Score: X.X/10" at the beginning
-- Be specific and technical but encouraging
-- Focus on competitive racing starts from blocks
-- Provide actionable improvements
-- Keep response under 150 words
-- Highlight both strengths and areas for improvement`
+            content: `You are an experienced AI swim coach with deep technical knowledge of start mechanics. Analyze this swimming start as if you’re coaching a high-level athlete aiming for the most technically sound start. Start your response with “Score: X.X/10.” Then, give 2–3 specific, actionable pieces of feedback only if there are real areas to improve—skip any section that looks solid. Each point should explain what to adjust and how to do it. If the start is excellent with no clear flaws, simply state that everything looks strong. Keep your tone professional, supportive, and concise, and ensure the full response stays under 80 words.`
           }
         ],
         temperature: 0.7,
